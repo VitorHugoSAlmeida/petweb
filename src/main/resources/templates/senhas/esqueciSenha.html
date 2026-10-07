@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esqueci minha senha</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-primaria-escura: #045a99;
+            --cor-fundo: #fbf7f1;
+            --cor-texto-escuro: #16283a;
+            --cor-texto-suave: #5c6b7a;
+            --cor-borda: #eee2d3;
+            --cor-sucesso: #28a745;
+            --raio-borda: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            padding: 24px; font-family: 'Inter', Arial, sans-serif; color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            background-image: radial-gradient(circle at 1px 1px, rgba(0,119,204,0.08) 1px, transparent 0);
+            background-size: 26px 26px; line-height: 1.5;
+        }
+        :focus-visible { outline: 3px solid var(--cor-secundaria); outline-offset: 3px; }
+        .cartao {
+            width: 100%; max-width: 440px; padding: 38px 36px; background: #fff;
+            border-radius: 28px; box-shadow: 0 20px 45px rgba(0,55,100,0.16);
+        }
+        .icone {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 54px; height: 54px; margin-bottom: 16px; font-size: 26px; color: #fff;
+            background: linear-gradient(150deg, var(--cor-secundaria), var(--cor-primaria));
+            border-radius: 50%;
+        }
+        h1 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 25px; }
+        .sub { margin: 6px 0 22px; font-size: 14px; color: var(--cor-texto-suave); }
+        label { display: block; margin-bottom: 6px; font-size: 12.5px; font-weight: 700; }
+        .campo { position: relative; display: flex; align-items: center; }
+        .campo i { position: absolute; left: 14px; font-size: 16px; color: var(--cor-texto-suave); pointer-events: none; }
+        input[type="email"] {
+            width: 100%; padding: 12px 12px 12px 40px; font: inherit; font-size: 14px;
+            background: var(--cor-fundo); border: 2px solid var(--cor-borda);
+            border-radius: var(--raio-borda); outline: none; transition: 0.25s ease;
+        }
+        input[type="email"]:focus {
+            border-color: var(--cor-secundaria); background: #fff;
+            box-shadow: 0 0 0 4px rgba(0,162,255,0.15);
+        }
+        button {
+            width: 100%; margin-top: 16px; padding: 14px; font: inherit; font-size: 15px; font-weight: 700;
+            color: #fff; background: var(--cor-primaria); border: none; border-radius: 999px;
+            cursor: pointer; transition: 0.25s ease;
+        }
+        button:hover { background: var(--cor-primaria-escura); transform: translateY(-2px); }
+        .aviso {
+            display: flex; gap: 10px; margin-bottom: 18px; padding: 12px 14px; font-size: 13.5px;
+            color: #1c6b38; background: #e8f6ed; border-radius: var(--raio-borda);
+        }
+        .aviso i { font-size: 18px; color: var(--cor-sucesso); flex-shrink: 0; }
+        .rodape { margin-top: 20px; font-size: 13px; text-align: center; }
+        .rodape a { font-weight: 700; color: var(--cor-primaria); text-decoration: none; }
+        .rodape a:hover { text-decoration: underline; }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+</head>
+<body>
+
+    <main class="cartao">
+        <span class="icone"><i class="ti ti-lock-question" aria-hidden="true"></i></span>
+        <h1>Esqueceu a senha?</h1>
+        <p class="sub">Informe o e-mail do seu cadastro e enviaremos um link para criar uma nova senha.</p>
+
+        <div class="aviso" th:if="${enviado}" role="status">
+            <i class="ti ti-circle-check" aria-hidden="true"></i>
+            <span>Se o e-mail estiver cadastrado, você receberá um link em instantes. O link vale por 30 minutos.</span>
+        </div>
+
+        <form th:action="@{/esqueci-senha}" method="post">
+            <label for="email">E-mail</label>
+            <div class="campo">
+                <input type="email" id="email" name="email" placeholder="Digite o seu e-mail" required autocomplete="email">
+                <i class="ti ti-mail" aria-hidden="true"></i>
+            </div>
+            <button type="submit">Enviar link de recuperação</button>
+        </form>
+
+        <p class="rodape">
+            <a th:href="@{/login}"><i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar para o login</a>
+        </p>
+    </main>
+
+</body>
+</html>

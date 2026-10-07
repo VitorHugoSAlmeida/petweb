@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema PetWeb</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================
+           1. VARIÁVEIS GLOBAIS
+        ========================================================== */
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-primaria-escura: #045a99;
+            --cor-destaque: #ffb020;
+            --cor-verde: #2fa564;
+            --cor-rosa: #d6478b;
+
+            --cor-fundo: #fbf7f1;
+            --cor-fundo-alt: #f2ecdf;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #16283a;
+            --cor-texto-suave: #5c6b7a;
+
+            --fonte-display: 'Baloo 2', system-ui, sans-serif;
+            --fonte-corpo: 'Inter', Arial, Helvetica, sans-serif;
+
+            --raio-borda: 16px;
+            --raio-borda-pill: 999px;
+            --transicao-padrao: 0.25s ease;
+            --sombra-suave: 0 4px 14px rgba(16, 40, 70, 0.06);
+            --sombra-media: 0 14px 30px rgba(0, 90, 153, 0.16);
+        }
+
+        /* ==========================================================
+           2. RESET E BASE
+        ========================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--fonte-corpo);
+            background-color: var(--cor-fundo);
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(0, 119, 204, 0.08) 1px, transparent 0);
+            background-size: 26px 26px;
+            color: var(--cor-texto-escuro);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        @keyframes surgir {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .surgir {
+            animation: surgir 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        a { color: inherit; }
+
+        :focus-visible {
+            outline: 3px solid var(--cor-secundaria);
+            outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+        }
+
+        .envolucro {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding-inline: clamp(20px, 5vw, 24px);
+        }
+
+        /* ==========================================================
+           3. NAVBAR
+        ========================================================== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 18px clamp(20px, 5vw, 24px);
+            background-color: rgba(251, 247, 241, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--fonte-display);
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--cor-primaria);
+            text-decoration: none;
+        }
+
+        .logo .icone-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            font-size: 19px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(145deg, var(--cor-secundaria), var(--cor-primaria));
+            border-radius: 12px;
+            box-shadow: var(--sombra-suave);
+        }
+
+        .navbar-acoes {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--cor-primaria);
+            background-color: transparent;
+            border: 2px solid transparent;
+            border-radius: var(--raio-borda-pill);
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: var(--transicao-padrao);
+        }
+
+        .btn-nav:hover {
+            background-color: #e8f4ff;
+        }
+
+        .btn-nav.cheio {
+            color: var(--cor-texto-claro);
+            background-color: var(--cor-primaria);
+            box-shadow: var(--sombra-media);
+        }
+
+        .btn-nav.cheio:hover {
+            background-color: var(--cor-primaria-escura);
+            transform: translateY(-2px);
+        }
+
+        /* ==========================================================
+           4. HERO
+        ========================================================== */
+        .hero {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            align-items: center;
+            gap: clamp(28px, 5vw, 48px);
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: clamp(30px, 6vw, 54px) clamp(20px, 5vw, 24px) clamp(60px, 9vw, 100px);
+        }
+
+        .etiqueta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--cor-primaria);
+            background-color: #e8f4ff;
+            border-radius: var(--raio-borda-pill);
+        }
+
+        .hero-texto h1 {
+            font-family: var(--fonte-display);
+            font-size: clamp(34px, 5.4vw, 58px);
+            font-weight: 800;
+            line-height: 1.08;
+            color: var(--cor-texto-escuro);
+            letter-spacing: -0.01em;
+        }
+
+        .hero-texto h1 span {
+            display: block;
+            background: linear-gradient(100deg, var(--cor-primaria) 20%, var(--cor-secundaria) 60%, var(--cor-verde) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitulo {
+            max-width: 440px;
+            margin-top: 18px;
+            margin-bottom: 30px;
+            font-size: clamp(15px, 1.6vw, 17px);
+            line-height: 1.6;
+            color: var(--cor-texto-suave);
+        }
+
+        .botoes-hero {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        .botoes-hero form {
+            display: inline-block;
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 26px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: 0.2px;
+            color: var(--cor-texto-claro);
+            background-color: var(--cor-primaria);
+            border: none;
+            border-radius: var(--raio-borda-pill);
+            cursor: pointer;
+            box-shadow: var(--sombra-media);
+            transition: var(--transicao-padrao);
+        }
+
+        button i { font-size: 17px; }
+
+        button:hover {
+            background-color: var(--cor-primaria-escura);
+            transform: translateY(-3px);
+            box-shadow: 0 18px 30px rgba(0, 90, 153, 0.24);
+        }
+
+        button:active { transform: translateY(0); }
+
+        .btn-secundario {
+            color: var(--cor-primaria);
+            background-color: transparent;
+            border: 2px solid var(--cor-primaria);
+            box-shadow: none;
+        }
+
+        .btn-secundario:hover {
+            color: var(--cor-texto-claro);
+            background-color: var(--cor-primaria);
+            box-shadow: var(--sombra-media);
+        }
+
+        .destaques {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .destaque-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--cor-texto-escuro);
+            background-color: #fff;
+            border: 1px solid #eef1f5;
+            border-radius: var(--raio-borda);
+            box-shadow: var(--sombra-suave);
+        }
+
+        .destaque-item i {
+            font-size: 16px;
+            color: var(--cor-secundaria);
+        }
+
+        /* ==========================================================
+           5. ILUSTRAÇÃO CIRCULAR
+        ========================================================== */
+        .hero-imagem {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: clamp(260px, 34vw, 400px);
+        }
+
+        .mancha-fundo {
+            position: absolute;
+            width: min(88%, 420px);
+            aspect-ratio: 1;
+            background: linear-gradient(150deg, var(--cor-secundaria), var(--cor-primaria));
+            opacity: 0.14;
+            border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%;
+        }
+
+        .circulo-fundo {
+            position: relative;
+            width: min(78%, 360px);
+            aspect-ratio: 1;
+            background-image: url('https://www.infoescola.com/wp-content/uploads/2010/08/husky-siberiano_71212480.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 50%;
+            border: 6px solid var(--cor-texto-claro);
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 90, 153, 0.28);
+        }
+
+        .bolha {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 10px 22px rgba(20, 40, 70, 0.16);
+        }
+
+        .bolha i { font-size: 24px; }
+
+        .bolha-1 { top: 6%;  left: 2%;  }
+        .bolha-1 i { color: var(--cor-verde); }
+
+        .bolha-2 { bottom: 6%; right: 4%; }
+        .bolha-2 i { color: var(--cor-rosa); }
+
+        .bolha-3 { top: 48%; right: -2%; width: 46px; height: 46px; }
+        .bolha-3 i { color: var(--cor-destaque); font-size: 19px; }
+
+        .ponto {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--cor-destaque);
+            border-radius: 50%;
+        }
+
+        .ponto-1 { top: 2%; left: 30%; }
+        .ponto-2 { top: 10%; left: 37%; width: 8px; height: 8px; }
+
+        /* ==========================================================
+           5.1 FAIXA DE CONFIANÇA
+        ========================================================== */
+        .confianca {
+            max-width: 1160px;
+            margin: 0 auto clamp(50px, 8vw, 80px);
+            padding: 0 clamp(20px, 5vw, 24px);
+        }
+
+        .confianca-cartao {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: linear-gradient(120deg, var(--cor-primaria), var(--cor-primaria-escura));
+            border-radius: var(--raio-borda);
+            box-shadow: var(--sombra-media);
+            overflow: hidden;
+        }
+
+        .confianca-item {
+            padding: 26px 20px;
+            text-align: center;
+            color: var(--cor-texto-claro);
+            border-right: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .confianca-item:last-child { border-right: none; }
+
+        .confianca-item strong {
+            display: block;
+            font-family: var(--fonte-display);
+            font-size: clamp(22px, 3vw, 30px);
+            font-weight: 700;
+        }
+
+        .confianca-item span {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        /* ==========================================================
+           6. SERVIÇOS
+        ========================================================== */
+        .servicos {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 clamp(20px, 5vw, 24px) clamp(60px, 8vw, 90px);
+        }
+
+        .servicos-cabecalho {
+            max-width: 520px;
+            margin-bottom: 32px;
+        }
+
+        .servicos-cabecalho .etiqueta {
+            background-color: #fff2df;
+            color: #b5760a;
+        }
+
+        .servicos-cabecalho h2 {
+            font-family: var(--fonte-display);
+            font-size: clamp(24px, 3.2vw, 32px);
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        .servicos-cabecalho p {
+            margin-top: 10px;
+            color: var(--cor-texto-suave);
+            font-size: 15px;
+        }
+
+        .servicos-grade {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .servico-card {
+            position: relative;
+            padding: 28px 22px;
+            background-color: #fff;
+            border: 1px solid #f0ece1;
+            border-radius: var(--raio-borda);
+            box-shadow: var(--sombra-suave);
+            transition: var(--transicao-padrao);
+        }
+
+        .servico-card:hover {
+            transform: translateY(-6px);
+            border-color: transparent;
+            box-shadow: var(--sombra-media);
+        }
+
+        .servico-numero {
+            position: absolute;
+            top: 20px;
+            right: 22px;
+            font-family: var(--fonte-display);
+            font-size: 13px;
+            font-weight: 700;
+            color: #d8dee5;
+        }
+
+        .servico-icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            font-size: 22px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(145deg, var(--cor-secundaria), var(--cor-primaria));
+            border-radius: 13px;
+            box-shadow: 0 8px 16px rgba(0, 119, 204, 0.25);
+        }
+
+        .servico-card h3 {
+            font-family: var(--fonte-display);
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .servico-card p {
+            font-size: 13.5px;
+            color: var(--cor-texto-suave);
+            line-height: 1.55;
+        }
+
+        /* ==========================================================
+           7. RODAPÉ
+        ========================================================== */
+        .rodape {
+            border-top: 1px solid #ece4d4;
+        }
+
+        .rodape-marca {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 26px clamp(20px, 5vw, 24px);
+            font-size: 12.5px;
+            text-align: center;
+            color: var(--cor-texto-suave);
+        }
+
+        .rodape-marca i {
+            color: var(--cor-secundaria);
+            font-size: 14px;
+        }
+
+        /* ==========================================================
+           8. RESPONSIVIDADE
+        ========================================================== */
+        @media (max-width: 980px) {
+            .servicos-grade {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 860px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-texto { order: 2; }
+            .hero-imagem { order: 1; }
+
+            .subtitulo {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .botoes-hero,
+            .destaques {
+                justify-content: center;
+            }
+
+            .servicos-cabecalho {
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .navbar { padding-block: 14px; }
+
+            .logo span { display: none; }
+
+            .btn-nav span { display: none; }
+
+            .btn-nav {
+                padding: 11px 14px;
+            }
+
+            .botoes-hero { flex-direction: column; align-items: stretch; }
+            .botoes-hero button { justify-content: center; }
+
+            .servicos-grade {
+                grid-template-columns: 1fr;
+            }
+
+            .confianca-cartao {
+                grid-template-columns: 1fr;
+            }
+
+            .confianca-item {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+            }
+
+            .confianca-item:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <a class="logo" th:href="@{/}">
+            <span class="icone-logo"><i class="ti ti-paw" aria-hidden="true"></i></span>
+            <span>PetWeb</span>
+        </a>
+
+        <div class="navbar-acoes">
+            <a class="btn-nav" th:href="@{/login}"><span>Entrar</span></a>
+            <a class="btn-nav cheio" th:href="@{/usuarios/criar}"><span>Cadastre-se</span></a>
+        </div>
+    </header>
+
+    <section class="hero">
+
+        <div class="hero-texto">
+            <span class="etiqueta surgir">
+                <i class="ti ti-heart" aria-hidden="true"></i>
+                Cuidando de quem você ama
+            </span>
+
+            <h1 class="surgir" style="animation-delay: 0.05s;">Sistema<span>PetWeb</span></h1>
+
+            <p class="subtitulo surgir" style="animation-delay: 0.1s;">
+                A gestão completa do seu petshop ou clínica veterinária,
+                do cadastro ao atendimento, em um só lugar.
+            </p>
+
+            <div class="botoes-hero surgir" style="animation-delay: 0.15s;">
+                <form action="/login" method="get">
+                    <button type="submit">
+                        <i class="ti ti-login" aria-hidden="true"></i>
+                        Acesso ao Sistema
+                    </button>
+                </form>
+
+                <form action="/usuarios/criar" method="get">
+                    <button type="submit" class="btn-secundario">
+                        <i class="ti ti-user-plus" aria-hidden="true"></i>
+                        Cadastre-se
+                    </button>
+                </form>
+            </div>
+
+            <div class="destaques">
+                <div class="destaque-item">
+                    <i class="ti ti-dog" aria-hidden="true"></i>
+                    Cães e gatos
+                </div>
+                <div class="destaque-item">
+                    <i class="ti ti-stethoscope" aria-hidden="true"></i>
+                    Consultas
+                </div>
+                <div class="destaque-item">
+                    <i class="ti ti-shopping-bag" aria-hidden="true"></i>
+                    Produtos
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-imagem surgir" style="animation-delay: 0.2s;">
+            <span class="ponto ponto-1" aria-hidden="true"></span>
+            <span class="ponto ponto-2" aria-hidden="true"></span>
+
+            <div class="mancha-fundo" aria-hidden="true"></div>
+            <div class="circulo-fundo" aria-label="Husky Siberiano"></div>
+
+            <div class="bolha bolha-1" aria-hidden="true">
+                <i class="ti ti-stethoscope"></i>
+            </div>
+            <div class="bolha bolha-2" aria-hidden="true">
+                <i class="ti ti-shopping-bag"></i>
+            </div>
+            <div class="bolha bolha-3" aria-hidden="true">
+                <i class="ti ti-heart"></i>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="confianca">
+        <div class="confianca-cartao">
+            <div class="confianca-item">
+                <strong>+500</strong>
+                <span>Pets cadastrados</span>
+            </div>
+            <div class="confianca-item">
+                <strong>24h</strong>
+                <span>Histórico sempre disponível</span>
+            </div>
+            <div class="confianca-item">
+                <strong>100%</strong>
+                <span>Online, sem planilhas</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="servicos">
+        <div class="servicos-cabecalho">
+            <span class="etiqueta">
+                <i class="ti ti-list-check" aria-hidden="true"></i>
+                Tudo em um só sistema
+            </span>
+            <h2>Do cadastro ao atendimento</h2>
+            <p>Organize consultas, produtos e clientes sem planilhas soltas ou anotações de papel.</p>
+        </div>
+
+        <div class="servicos-grade">
+            <div class="servico-card">
+                <span class="servico-numero">01</span>
+                <span class="servico-icone"><i class="ti ti-stethoscope" aria-hidden="true"></i></span>
+                <h3>Consultas</h3>
+                <p>Agende e acompanhe o histórico de atendimento de cada pet em poucos cliques.</p>
+            </div>
+            <div class="servico-card">
+                <span class="servico-numero">02</span>
+                <span class="servico-icone"><i class="ti ti-shopping-bag" aria-hidden="true"></i></span>
+                <h3>Pedidos e produtos</h3>
+                <p>Controle o estoque e monte pedidos direto pelo sistema, sem retrabalho.</p>
+            </div>
+            <div class="servico-card">
+                <span class="servico-numero">03</span>
+                <span class="servico-icone"><i class="ti ti-dog" aria-hidden="true"></i></span>
+                <h3>Cadastro de pets</h3>
+                <p>Mantenha dados de tutores e animais sempre à mão, num único lugar.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="rodape">
+        <p class="rodape-marca">
+            <i class="ti ti-paw" aria-hidden="true"></i>
+            PetWeb — cuidado e carinho em cada consulta
+        </p>
+    </footer>
+
+</body>
+</html>

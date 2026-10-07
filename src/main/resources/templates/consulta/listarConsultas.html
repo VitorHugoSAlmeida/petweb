@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Consultas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-gradiente-1: #4facfe;
+            --cor-gradiente-2: #00c2ff;
+            --cor-destaque: #ffb84d;
+
+            --cor-fundo: #fbf7f1;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #1f2b3a;
+            --cor-texto-suave: #667085;
+            --cor-borda: #eee2d3;
+            --cor-erro: #e24b4a;
+            --cor-erro-fundo: #fcebeb;
+            --raio-borda: 10px;
+            --raio-borda-card: 20px;
+            --transicao-padrao: 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--cor-fundo);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--cor-texto-claro);
+            width: 100%;
+            max-width: 1140px;
+            padding: 35px 40px;
+            border-radius: var(--raio-borda-card);
+            box-shadow: 0 20px 45px rgba(0, 55, 100, 0.12);
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .cabecalho-titulo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cabecalho-titulo .icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(150deg, var(--cor-gradiente-1), var(--cor-primaria));
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 119, 204, 0.3);
+        }
+
+        .cabecalho-titulo h1 {
+            color: var(--cor-primaria);
+            font-size: 24px;
+        }
+
+        .btn-novo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            background-color: var(--cor-primaria);
+            color: var(--cor-texto-claro);
+            padding: 12px 20px;
+            border-radius: var(--raio-borda);
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: var(--transicao-padrao);
+            box-shadow: 0 10px 22px rgba(0, 119, 204, 0.3);
+        }
+
+        .btn-novo i {
+            font-size: 18px;
+        }
+
+        .btn-novo:hover {
+            background-color: var(--cor-secundaria);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(0, 119, 204, 0.35);
+        }
+
+        .tabela-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #e8f4ff;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            color: var(--cor-primaria);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--cor-borda);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            color: var(--cor-texto-escuro);
+            border-bottom: 1px solid var(--cor-borda);
+        }
+
+        td.observacoes {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background-color: var(--cor-fundo);
+        }
+
+        .acoes {
+            display: flex;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-acao {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: var(--raio-borda);
+            font-size: 13px;
+            font-weight: bold;
+            transition: var(--transicao-padrao);
+        }
+
+        .btn-acao i {
+            font-size: 15px;
+        }
+
+        .btn-edit {
+            background-color: #e8f4ff;
+            color: var(--cor-primaria);
+        }
+
+        .btn-edit:hover {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-texto-claro);
+        }
+
+        .btn-delete {
+            background-color: var(--cor-erro-fundo);
+            color: var(--cor-erro);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--cor-erro);
+            color: var(--cor-texto-claro);
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--cor-texto-suave);
+        }
+
+        .vazio i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+        }
+                /* Rodapé com o link de voltar (copiado do formulário de cadastro) */
+                .rodape {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+        }
+ 
+        .rodape a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            font-weight: bold;
+        }
+ 
+        .rodape a:hover {
+            text-decoration: underline;
+        }
+
+        
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+            th, td {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="cabecalho">
+            <div class="cabecalho-titulo">
+                <span class="icone"><i class="ti ti-clipboard-text" aria-hidden="true"></i></span>
+                <h1>Listagem de Consultas</h1>
+            </div>
+            <a class="btn-novo" th:href="@{/consultas/criar}">
+                <i class="ti ti-plus" aria-hidden="true"></i>
+                Nova Consulta
+            </a>
+        </div>
+
+        <div class="tabela-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Diagnóstico</th>
+                        <th>Tratamento</th>
+                        <th>Valor</th>
+                        <th>Observações</th>
+                        <th colspan="2">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="consulta : ${consultas}">
+                        <td th:text="${consulta.dataConsulta}"></td>
+                        <td th:text="${consulta.horaConsulta}"></td>
+                        <td th:text="${consulta.diagnosticoConsulta}"></td>
+                        <td th:text="${consulta.tratamentoConsulta}"></td>
+                        <td th:text="${consulta.valorConsulta}"></td>
+                        <td class="observacoes" th:text="${consulta.observacoesConsulta}" th:title="${consulta.observacoesConsulta}"></td>
+                        <td colspan="2">
+                            <div class="acoes">
+                                <a class="btn-acao btn-edit" th:href="@{/consultas/editar/{id}(id=${consulta.idConsulta})}">
+                                    <i class="ti ti-edit" aria-hidden="true"></i>
+                                    Editar
+                                </a>
+                                <a class="btn-acao btn-delete" th:href="@{/consultas/excluir/{id}(id=${consulta.idConsulta})}">
+                                    <i class="ti ti-trash" aria-hidden="true"></i>
+                                    Excluir
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(consultas)}">
+                        <td colspan="8" class="vazio">
+                            <i class="ti ti-clipboard-text" aria-hidden="true"></i>
+                            Nenhuma consulta cadastrada ainda.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="rodape">
+            <a th:href="@{/home}">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                Voltar para home
+            </a>
+        </p>
+    </div>
+
+</body>
+</html>

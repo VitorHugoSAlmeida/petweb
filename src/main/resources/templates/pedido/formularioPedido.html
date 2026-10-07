@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Pedidos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+ 
+    <!-- Token CSRF, se o projeto usar Spring Security. Não quebra se não usar. -->
+    <th:block th:if="${_csrf != null}">
+        <meta name="_csrf" th:content="${_csrf.token}" />
+        <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    </th:block>
+ 
+    <style>
+        /* ==========================================================
+           1. VARIÁVEIS GLOBAIS
+        ========================================================== */
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-gradiente-1: #4facfe;
+            --cor-gradiente-2: #00c2ff;
+            --cor-destaque: #ffb84d;
+ 
+            --cor-fundo: #fbf7f1;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #1f2b3a;
+            --cor-texto-suave: #667085;
+            --cor-borda: #eee2d3;
+ 
+            --cor-sucesso: #28a745;
+            --cor-erro: #dc3545;
+            --cor-fundo-suave: #f4efe6;
+ 
+            --raio-borda: 10px;
+            --raio-borda-card: 20px;
+            --transicao-padrao: 0.25s ease;
+        }
+ 
+        /* ==========================================================
+           2. RESET E BASE
+        ========================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+ 
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            background-color: var(--cor-fundo);
+        }
+ 
+        /* ==========================================================
+           3. CARD / CONTAINER
+        ========================================================== */
+        .container {
+            width: 100%;
+            max-width: 640px;
+            padding: 40px 45px;
+            background-color: var(--cor-texto-claro);
+            border-radius: var(--raio-borda-card);
+            box-shadow: 0 20px 45px rgba(0, 55, 100, 0.12);
+        }
+ 
+        .cabecalho {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+ 
+        .cabecalho .icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            font-size: 28px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(150deg, var(--cor-gradiente-1), var(--cor-primaria));
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 119, 204, 0.3);
+        }
+ 
+        .cabecalho h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cor-primaria);
+        }
+ 
+        .cabecalho p {
+            margin-top: 4px;
+            font-size: 14px;
+            color: var(--cor-texto-suave);
+        }
+ 
+        /* ==========================================================
+           4. SEÇÕES
+        ========================================================== */
+        .secao {
+            margin-bottom: 24px;
+        }
+ 
+        .secao-titulo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--cor-primaria);
+            border-bottom: 1px solid var(--cor-borda);
+        }
+ 
+        .secao-titulo i {
+            font-size: 16px;
+        }
+ 
+        /* ==========================================================
+           5. CAMPOS DE FORMULÁRIO
+        ========================================================== */
+        .campo {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 14px;
+        }
+ 
+        .campo:last-child {
+            margin-bottom: 0;
+        }
+ 
+        .linha-campos {
+            display: grid;
+            grid-template-columns: 1fr 130px;
+            gap: 0 14px;
+            align-items: end;
+        }
+ 
+        label {
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--cor-texto-escuro);
+        }
+ 
+        .campo-com-icone {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+ 
+        .campo-com-icone i {
+            position: absolute;
+            left: 14px;
+            font-size: 16px;
+            color: var(--cor-texto-suave);
+            pointer-events: none;
+        }
+ 
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            font-size: 14px;
+            color: var(--cor-texto-escuro);
+            font-family: inherit;
+            background-color: var(--cor-fundo);
+            border: 2px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+            outline: none;
+            transition: var(--transicao-padrao);
+        }
+ 
+        input[type="number"] {
+            padding-left: 12px;
+        }
+ 
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--cor-secundaria);
+            background-color: var(--cor-texto-claro);
+            box-shadow: 0 0 0 4px rgba(0, 162, 255, 0.15);
+        }
+ 
+        input[type="text"]:focus + i {
+            color: var(--cor-secundaria);
+        }
+ 
+        /* ==========================================================
+           6. BOTÕES
+        ========================================================== */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+            color: var(--cor-texto-claro);
+            background-color: var(--cor-primaria);
+            border: none;
+            border-radius: var(--raio-borda);
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(0, 119, 204, 0.3);
+            transition: var(--transicao-padrao);
+        }
+ 
+        .btn:hover {
+            background-color: var(--cor-secundaria);
+            box-shadow: 0 14px 26px rgba(0, 119, 204, 0.35);
+            transform: translateY(-2px);
+        }
+ 
+        .btn:active {
+            transform: translateY(0);
+        }
+ 
+        .btn-adicionar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+ 
+        .btn-confirmar {
+            padding: 15px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+ 
+        .btn-remover {
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--cor-erro);
+            background-color: transparent;
+            border: 1.5px solid var(--cor-erro);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transicao-padrao);
+        }
+ 
+        .btn-remover:hover {
+            color: var(--cor-texto-claro);
+            background-color: var(--cor-erro);
+        }
+ 
+        /* ==========================================================
+           7. TABELA DE ITENS
+        ========================================================== */
+        .tabela-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+        }
+ 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+ 
+        thead th {
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            text-align: left;
+            color: var(--cor-texto-suave);
+            background-color: var(--cor-fundo-suave);
+            border-bottom: 1px solid var(--cor-borda);
+        }
+ 
+        tbody td {
+            padding: 10px 12px;
+            color: var(--cor-texto-escuro);
+            border-bottom: 1px solid var(--cor-borda);
+        }
+ 
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+ 
+        tbody tr:hover td {
+            background-color: var(--cor-fundo-suave);
+        }
+ 
+        #empty-row td {
+            padding: 18px 12px;
+            font-style: italic;
+            text-align: center;
+            color: var(--cor-texto-suave);
+        }
+ 
+        /* Input de quantidade dentro da tabela (editável) */
+        .qtd-input {
+            width: 64px;
+            padding: 6px 8px;
+            font-size: 13px;
+            text-align: center;
+            color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            border: 1.5px solid var(--cor-borda);
+            border-radius: 8px;
+            outline: none;
+            transition: var(--transicao-padrao);
+        }
+ 
+        .qtd-input:focus {
+            border-color: var(--cor-secundaria);
+            background-color: var(--cor-texto-claro);
+            box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.15);
+        }
+ 
+        .qtd-input.invalida {
+            border-color: var(--cor-erro);
+        }
+ 
+        /* ==========================================================
+           8. TOTAL DO PEDIDO
+        ========================================================== */
+        .total-pedido {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding: 14px 16px;
+            background-color: var(--cor-fundo-suave);
+            border-radius: var(--raio-borda);
+        }
+ 
+        .total-pedido .rotulo {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--cor-texto-escuro);
+        }
+ 
+        .total-pedido .valor {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--cor-primaria);
+        }
+ 
+        /* ==========================================================
+           9. RESPONSIVIDADE
+        ========================================================== */
+        @media (max-width: 520px) {
+            .container {
+                padding: 30px 25px;
+            }
+ 
+            .linha-campos {
+                grid-template-columns: 1fr;
+                gap: 14px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+ 
+<div class="container">
+ 
+    <header class="cabecalho">
+        <span class="icone"><i class="ti ti-shopping-cart" aria-hidden="true"></i></span>
+        <h1>Formulário de Pedidos</h1>
+        <p>Selecione o cliente e adicione os produtos ao pedido</p>
+    </header>
+ 
+    <datalist id="listaClientes">
+        <option th:each="cliente : ${clientes}"
+                th:value="${cliente.idCliente + ' - ' + cliente.nomeCliente}">
+        </option>
+    </datalist>
+ 
+    <datalist id="listaProdutos">
+        <option th:each="produto : ${produtos}"
+                th:value="${produto.idProduto + ' - ' + produto.descricaoProduto}"
+                th:attr="data-preco=${produto.valorProduto}">
+        </option>
+    </datalist>
+ 
+    <!-- I. CLIENTE -->
+    <div class="secao">
+        <div class="secao-titulo">
+            <i class="ti ti-user-circle" aria-hidden="true"></i>
+            I. Identificação do cliente
+        </div>
+ 
+        <div class="campo">
+            <label for="cliente">Cliente</label>
+            <div class="campo-com-icone">
+                <input list="listaClientes" id="cliente" type="text" placeholder="Digite o nome ou código do cliente">
+                <i class="ti ti-user" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- II. ADICIONAR PRODUTO -->
+    <div class="secao">
+        <div class="secao-titulo">
+            <i class="ti ti-box" aria-hidden="true"></i>
+            II. Adicionar produto ao pedido
+        </div>
+ 
+        <div class="linha-campos">
+            <div class="campo">
+                <label for="produto">Produto</label>
+                <div class="campo-com-icone">
+                    <input list="listaProdutos" id="produto" type="text" placeholder="Digite o produto">
+                    <i class="ti ti-search" aria-hidden="true"></i>
+                </div>
+            </div>
+ 
+            <div class="campo">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" id="quantidade" placeholder="0" min="1" step="1">
+            </div>
+        </div>
+ 
+        <button type="button" class="btn btn-adicionar" onclick="adicionarItem()">
+            <i class="ti ti-plus" aria-hidden="true"></i>
+            Adicionar item
+        </button>
+    </div>
+ 
+    <!-- III. ITENS DO PEDIDO -->
+    <div class="secao">
+        <div class="secao-titulo">
+            <i class="ti ti-list" aria-hidden="true"></i>
+            III. Itens do pedido
+        </div>
+ 
+        <div class="tabela-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd.</th>
+                        <th>Preço unit.</th>
+                        <th>Subtotal</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="table-itens">
+                    <tr id="empty-row">
+                        <td colspan="5">Nenhum produto adicionado ao pedido</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+ 
+        <div class="total-pedido">
+            <span class="rotulo">Total do pedido</span>
+            <span class="valor">R$ <span id="totalPedido">0,00</span></span>
+        </div>
+    </div>
+ 
+    <button type="button" class="btn btn-confirmar" onclick="salvarPedido()">
+        Confirmar e salvar pedido
+    </button>
+ 
+</div>
+ 
+<script>
+(function () {
+    "use strict";
+ 
+    /* ==========================================================
+       1. ESTADO
+    ========================================================== */
+    let itens = [];
+ 
+    const campoCliente = document.getElementById("cliente");
+    const campoProduto = document.getElementById("produto");
+    const campoQuantidade = document.getElementById("quantidade");
+    const corpoTabela = document.getElementById("table-itens");
+    const totalPedidoEl = document.getElementById("totalPedido");
+ 
+    /* ==========================================================
+       2. CABEÇALHOS CSRF (só é usado se o projeto tiver
+          Spring Security habilitado; senão, fica vazio)
+    ========================================================== */
+    function getCsrfHeaders() {
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        const headers = { "Content-Type": "application/json" };
+ 
+        if (tokenMeta && headerMeta) {
+            headers[headerMeta.content] = tokenMeta.content;
+        }
+ 
+        return headers;
+    }
+ 
+    /* ==========================================================
+       3. ADICIONAR ITEM
+    ========================================================== */
+    window.adicionarItem = function () {
+        const produtoInput = campoProduto.value.trim();
+        const quantidade = Number(campoQuantidade.value);
+ 
+        if (!produtoInput || !Number.isInteger(quantidade) || quantidade <= 0) {
+            alert("Preencha corretamente o produto e a quantidade!");
+            return;
+        }
+ 
+        const partes = produtoInput.split(" - ");
+        const produtoId = partes[0];
+        const produtoNome = partes.slice(1).join(" - ") || produtoInput;
+ 
+        // BUG CORRIGIDO: comparar contra o texto exibido no datalist
+        const opcaoSelecionada = Array.from(
+            document.querySelectorAll("#listaProdutos option")
+        ).find(opt => opt.value === produtoInput);
+ 
+        if (!opcaoSelecionada) {
+            alert("Produto inválido! Selecione um produto da lista.");
+            return;
+        }
+ 
+        const preco = parseFloat(opcaoSelecionada.getAttribute("data-preco"));
+ 
+        if (Number.isNaN(preco)) {
+            alert("Não foi possível ler o preço desse produto.");
+            return;
+        }
+ 
+        const subtotal = quantidade * preco;
+ 
+        itens.push({
+            produto: { idProduto: produtoId },
+            nomeProduto: produtoNome,
+            quantidade: quantidade,
+            preco: preco,
+            subtotal: subtotal
+        });
+ 
+        campoProduto.value = "";
+        campoQuantidade.value = "";
+ 
+        renderizarTabela();
+    };
+ 
+    /* ==========================================================
+       4. REMOVER ITEM
+    ========================================================== */
+    window.removerItem = function (index) {
+        itens.splice(index, 1);
+        renderizarTabela();
+    };
+ 
+    /* ==========================================================
+       4.1 ATUALIZAR QUANTIDADE DE UM ITEM JÁ ADICIONADO
+    ========================================================== */
+    window.atualizarQuantidade = function (index, inputEl) {
+        const novaQuantidade = Number(inputEl.value);
+
+        if (!Number.isInteger(novaQuantidade) || novaQuantidade <= 0) {
+            inputEl.classList.add("invalida");
+            return;
+        }
+
+        inputEl.classList.remove("invalida");
+
+        const item = itens[index];
+        item.quantidade = novaQuantidade;
+        item.subtotal = novaQuantidade * item.preco;
+
+        // Atualiza apenas o subtotal da linha e o total geral,
+        // sem re-renderizar a tabela inteira (evita perder o foco do input)
+        const linha = corpoTabela.children[index];
+        const celulaSubtotal = linha.children[3];
+        celulaSubtotal.textContent = "R$ " + formatarMoeda(item.subtotal);
+
+        atualizarTotalGeral();
+    };
+
+    function atualizarTotalGeral() {
+        const total = itens.reduce((soma, item) => soma + item.subtotal, 0);
+        totalPedidoEl.textContent = formatarMoeda(total);
+    }
+
+    /* ==========================================================
+       5. RENDERIZAR TABELA
+       (usando DOM em vez de innerHTML, para não correr risco
+       de quebrar o layout com nomes de produto contendo
+       caracteres especiais)
+    ========================================================== */
+    function formatarMoeda(valor) {
+        return valor.toFixed(2).replace(".", ",");
+    }
+ 
+    function renderizarTabela() {
+        corpoTabela.innerHTML = "";
+ 
+        if (itens.length === 0) {
+            const linhaVazia = document.createElement("tr");
+            linhaVazia.id = "empty-row";
+            linhaVazia.innerHTML = '<td colspan="5">Nenhum produto adicionado ao pedido</td>';
+            corpoTabela.appendChild(linhaVazia);
+            totalPedidoEl.textContent = "0,00";
+            return;
+        }
+ 
+        let total = 0;
+ 
+        itens.forEach((item, index) => {
+            total += item.subtotal;
+ 
+            const linha = document.createElement("tr");
+ 
+            const criarCelula = texto => {
+                const td = document.createElement("td");
+                td.textContent = texto;
+                return td;
+            };
+ 
+            linha.appendChild(criarCelula(item.nomeProduto));
+
+            // Célula de quantidade agora é um input editável
+            const tdQtd = document.createElement("td");
+            const inputQtd = document.createElement("input");
+            inputQtd.type = "number";
+            inputQtd.className = "qtd-input";
+            inputQtd.min = "1";
+            inputQtd.step = "1";
+            inputQtd.value = item.quantidade;
+            inputQtd.addEventListener("change", () => atualizarQuantidade(index, inputQtd));
+            inputQtd.addEventListener("input", () => atualizarQuantidade(index, inputQtd));
+            tdQtd.appendChild(inputQtd);
+            linha.appendChild(tdQtd);
+
+            linha.appendChild(criarCelula("R$ " + formatarMoeda(item.preco)));
+            linha.appendChild(criarCelula("R$ " + formatarMoeda(item.subtotal)));
+ 
+            const tdAcao = document.createElement("td");
+            const btnRemover = document.createElement("button");
+            btnRemover.className = "btn-remover";
+            btnRemover.type = "button";
+            btnRemover.textContent = "Remover";
+            btnRemover.addEventListener("click", () => removerItem(index));
+            tdAcao.appendChild(btnRemover);
+            linha.appendChild(tdAcao);
+ 
+            corpoTabela.appendChild(linha);
+        });
+ 
+        totalPedidoEl.textContent = formatarMoeda(total);
+    }
+ 
+    /* ==========================================================
+       6. SALVAR PEDIDO
+    ========================================================== */
+    window.salvarPedido = function () {
+        const clienteInput = campoCliente.value.trim();
+ 
+        if (!clienteInput) {
+            alert("Selecione um cliente antes de salvar!");
+            return;
+        }
+ 
+        if (itens.length === 0) {
+            alert("Adicione ao menos um produto ao pedido!");
+            return;
+        }
+ 
+        const clienteId = clienteInput.split(" - ")[0];
+ 
+        const pedido = {
+            cliente: { idCliente: clienteId },
+            itens: itens
+        };
+ 
+        fetch("/pedidos", {
+            method: "POST",
+            headers: getCsrfHeaders(),
+            body: JSON.stringify(pedido)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Resposta HTTP " + res.status);
+                }
+                return res.json();
+            })
+            .then(() => {
+                alert("Pedido salvo com sucesso!");
+                location.reload();
+            })
+            .catch(err => {
+                alert("Erro ao salvar o pedido. Tente novamente.");
+                console.error(err);
+            });
+    };
+ 
+})();
+</script>
+ 
+</body>
+</html>

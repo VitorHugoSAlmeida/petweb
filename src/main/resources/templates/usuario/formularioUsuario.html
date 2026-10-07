@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuários</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        /* ==========================================================
+           1. VARIÁVEIS GLOBAIS (mesmo sistema da index)
+        ========================================================== */
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-primaria-escura: #045a99;
+            --cor-destaque: #ffb020;
+            --cor-verde: #2fa564;
+            --cor-rosa: #d6478b;
+
+            --cor-fundo: #fbf7f1;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #16283a;
+            --cor-texto-suave: #5c6b7a;
+            --cor-borda: #eee2d3;
+
+            --cor-sucesso: #28a745;
+            --cor-erro: #dc3545;
+            --cor-alerta: #fd7e14;
+            --cor-atencao: #ffc107;
+
+            --fonte-display: 'Baloo 2', system-ui, sans-serif;
+            --fonte-corpo: 'Inter', Arial, Helvetica, sans-serif;
+
+            --raio-borda: 12px;
+            --raio-borda-card: 28px;
+            --raio-borda-pill: 999px;
+            --transicao-padrao: 0.25s ease;
+
+            --sombra-suave: 0 4px 14px rgba(16, 40, 70, 0.06);
+            --sombra-media: 0 20px 45px rgba(0, 55, 100, 0.16);
+        }
+
+        /* ==========================================================
+           2. RESET E BASE
+        ========================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(16px, 5vw, 32px);
+            font-family: var(--fonte-corpo);
+            color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(0, 119, 204, 0.08) 1px, transparent 0);
+            background-size: 26px 26px;
+            line-height: 1.5;
+        }
+
+        a { color: inherit; }
+
+        :focus-visible {
+            outline: 3px solid var(--cor-secundaria);
+            outline-offset: 3px;
+        }
+
+        @keyframes surgir {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .surgir {
+            animation: surgir 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
+        }
+
+        /* ==========================================================
+           3. CARTÃO PRINCIPAL (duas colunas)
+        ========================================================== */
+        .cartao-auth {
+            width: 100%;
+            max-width: 1040px;
+            display: grid;
+            grid-template-columns: 0.85fr 1.3fr;
+            background-color: var(--cor-texto-claro);
+            border-radius: var(--raio-borda-card);
+            box-shadow: var(--sombra-media);
+            overflow: hidden;
+        }
+
+        /* ==========================================================
+           4. PAINEL DE MARCA (esquerda)
+        ========================================================== */
+        .painel-marca {
+            position: relative;
+            padding: clamp(32px, 4vw, 46px) clamp(28px, 4vw, 38px);
+            display: flex;
+            flex-direction: column;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(150deg, var(--cor-secundaria), var(--cor-primaria) 60%, var(--cor-primaria-escura));
+            overflow: hidden;
+        }
+
+        .painel-marca .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--fonte-display);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--cor-texto-claro);
+        }
+
+        .painel-marca .icone-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            font-size: 17px;
+            background-color: rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+        }
+
+        .painel-marca h1 {
+            margin-top: clamp(28px, 6vw, 46px);
+            font-family: var(--fonte-display);
+            font-size: clamp(24px, 2.6vw, 30px);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .painel-marca h1 span {
+            color: var(--cor-destaque);
+        }
+
+        .painel-marca p.descricao {
+            margin-top: 12px;
+            max-width: 280px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .lista-marca {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .lista-marca li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            list-style: none;
+        }
+
+        .lista-marca i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.16);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .estatistica-flutuante {
+            margin-top: auto;
+            padding-top: 26px;
+        }
+
+        .estatistica-flutuante .cartao-mini {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background-color: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--raio-borda);
+            backdrop-filter: blur(4px);
+        }
+
+        .estatistica-flutuante strong {
+            display: block;
+            font-family: var(--fonte-display);
+            font-size: 18px;
+        }
+
+        .estatistica-flutuante span {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .mancha-decorativa {
+            position: absolute;
+            width: 220px;
+            aspect-ratio: 1;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%;
+            pointer-events: none;
+        }
+
+        .mancha-decorativa.m1 { top: -60px; right: -70px; }
+        .mancha-decorativa.m2 { bottom: -90px; left: -60px; width: 180px; }
+
+        .pata-flutuante {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background-color: rgba(255, 255, 255, 0.16);
+            border-radius: 50%;
+            font-size: 18px;
+        }
+
+        .pata-flutuante.p1 { top: 22px; right: 30px; }
+        .pata-flutuante.p2 { bottom: 96px; right: 44px; }
+
+        /* ==========================================================
+           5. PAINEL DO FORMULÁRIO (direita)
+        ========================================================== */
+        .painel-formulario {
+            padding: clamp(30px, 4.5vw, 44px) clamp(28px, 4.5vw, 42px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cabecalho-form h2 {
+            font-family: var(--fonte-display);
+            font-size: clamp(21px, 2.4vw, 25px);
+            font-weight: 700;
+            color: var(--cor-texto-escuro);
+        }
+
+        .cabecalho-form p {
+            margin-top: 6px;
+            margin-bottom: 22px;
+            font-size: 13.5px;
+            color: var(--cor-texto-suave);
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 16px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 14px;
+        }
+
+        .campo.largura-total {
+            grid-column: 1 / -1;
+        }
+
+        .campo-senha {
+            align-items: stretch;
+        }
+
+        label {
+            margin-bottom: 6px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--cor-texto-escuro);
+        }
+
+        /* ==========================================================
+           6. INPUTS COM ÍCONE
+        ========================================================== */
+        .campo-com-icone {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .campo-com-icone > i:not(.mostrar-senha) {
+            position: absolute;
+            left: 14px;
+            font-size: 16px;
+            color: var(--cor-texto-suave);
+            pointer-events: none;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 44px 12px 40px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            border: 2px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+            outline: none;
+            transition: var(--transicao-padrao);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--cor-secundaria);
+            background-color: var(--cor-texto-claro);
+            box-shadow: 0 0 0 4px rgba(0, 162, 255, 0.15);
+        }
+
+        /* ==========================================================
+           7. CAMPO DE SENHA (mostrar/ocultar)
+        ========================================================== */
+        .senha-container {
+            width: 100%;
+        }
+
+        .mostrar-senha {
+            position: absolute;
+            left: auto !important;
+            right: 14px;
+            font-size: 18px !important;
+            color: var(--cor-texto-suave);
+            cursor: pointer;
+            pointer-events: auto !important;
+            transition: 0.2s;
+        }
+
+        .mostrar-senha:hover {
+            color: var(--cor-secundaria);
+        }
+
+        /* ==========================================================
+           8. BARRA DE FORÇA DA SENHA
+        ========================================================== */
+        .barra-forca {
+            width: 100%;
+            height: 7px;
+            margin-top: 8px;
+            background-color: var(--cor-borda);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .barra-forca-nivel {
+            width: 0%;
+            height: 100%;
+            border-radius: 10px;
+            transition: 0.3s ease;
+        }
+
+        .texto-forca {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* ==========================================================
+           9. CHECKLIST DE REQUISITOS DA SENHA
+        ========================================================== */
+        .requisitos-senha {
+            margin-top: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            background-color: var(--cor-fundo);
+            border-radius: var(--raio-borda);
+        }
+
+        .requisito {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 4px;
+            color: var(--cor-texto-suave);
+            transition: 0.2s;
+        }
+
+        .requisito:last-child { margin-bottom: 0; }
+
+        .requisito.valido {
+            font-weight: 700;
+            color: var(--cor-sucesso);
+        }
+
+        .requisito.invalido {
+            color: var(--cor-texto-suave);
+        }
+
+        /* ==========================================================
+           10. CONFIRMAÇÃO DE SENHA
+        ========================================================== */
+        .mensagem-confirmacao {
+            display: block;
+            min-height: 15px;
+            margin-top: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .senha-igual { color: var(--cor-sucesso); }
+        .senha-diferente { color: var(--cor-erro); }
+
+        /* ==========================================================
+           11. BOTÃO E RODAPÉ
+        ========================================================== */
+        input[type="submit"] {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: var(--cor-texto-claro);
+            background-color: var(--cor-primaria);
+            border: none;
+            border-radius: var(--raio-borda-pill);
+            cursor: pointer;
+            box-shadow: var(--sombra-suave);
+            transition: var(--transicao-padrao);
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--cor-primaria-escura);
+            box-shadow: var(--sombra-media);
+            transform: translateY(-2px);
+        }
+
+        input[type="submit"]:active { transform: translateY(0); }
+
+        .rodape-form {
+            grid-column: 1 / -1;
+            margin-top: 18px;
+            font-size: 13px;
+            text-align: center;
+            color: var(--cor-texto-suave);
+        }
+
+        .rodape-form a {
+            font-weight: 700;
+            color: var(--cor-primaria);
+            text-decoration: none;
+        }
+
+        .rodape-form a:hover { text-decoration: underline; }
+
+        /* ==========================================================
+           12. RESPONSIVIDADE
+        ========================================================== */
+        @media (max-width: 940px) {
+            .cartao-auth {
+                grid-template-columns: 1fr;
+                max-width: 560px;
+            }
+
+            .painel-marca {
+                padding: 26px 30px;
+            }
+
+            .painel-marca h1 {
+                margin-top: 14px;
+                font-size: 21px;
+            }
+
+            .painel-marca p.descricao {
+                max-width: none;
+            }
+
+            .lista-marca,
+            .estatistica-flutuante {
+                display: none;
+            }
+
+            .mancha-decorativa.m2,
+            .pata-flutuante.p2 {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .painel-formulario {
+                padding: 26px 22px;
+            }
+
+            .painel-marca {
+                padding: 22px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cartao-auth surgir">
+
+        <aside class="painel-marca">
+            <span class="mancha-decorativa m1" aria-hidden="true"></span>
+            <span class="mancha-decorativa m2" aria-hidden="true"></span>
+            <span class="pata-flutuante p1" aria-hidden="true"><i class="ti ti-heart"></i></span>
+            <span class="pata-flutuante p2" aria-hidden="true"><i class="ti ti-shopping-bag"></i></span>
+
+            <a class="logo" th:href="@{/}">
+                <span class="icone-logo"><i class="ti ti-paw" aria-hidden="true"></i></span>
+                PetWeb
+            </a>
+
+            <h1>Comece <span>agora</span></h1>
+            <p class="descricao">Crie sua conta e organize a rotina do seu petshop ou clínica em minutos.</p>
+
+            <ul class="lista-marca">
+                <li><i class="ti ti-dog" aria-hidden="true"></i> Cadastro de pets</li>
+                <li><i class="ti ti-calendar-event" aria-hidden="true"></i> Agenda de consultas</li>
+                <li><i class="ti ti-shopping-bag" aria-hidden="true"></i> Controle de produtos</li>
+            </ul>
+
+            <div class="estatistica-flutuante">
+                <div class="cartao-mini">
+                    <strong>100%</strong>
+                    <span>online, sem planilhas</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="painel-formulario">
+
+            <div class="cabecalho-form">
+                <h2>Cadastro de usuários</h2>
+                <p>Preencha os dados abaixo para criar sua conta.</p>
+            </div>
+
+            <form th:action="@{/usuarios/salvar}" method="post" th:object="${usuario}" id="formCadastro">
+
+                <input type="hidden" th:field="*{idUsuario}">
+
+                <!-- NOME -->
+                <div class="campo largura-total">
+                    <label for="nomeUsuario">Nome completo</label>
+                    <div class="campo-com-icone">
+                        <input type="text" id="nomeUsuario" th:field="*{nomeUsuario}" placeholder="Digite o nome">
+                        <i class="ti ti-user" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="campo largura-total">
+                    <label for="emailUsuario">E-mail</label>
+                    <div class="campo-com-icone">
+                        <input type="text" id="emailUsuario" th:field="*{emailUsuario}" placeholder="Digite o e-mail">
+                        <i class="ti ti-mail" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <!-- CPF -->
+                <div class="campo">
+                    <label for="cpfUsuario">CPF</label>
+                    <div class="campo-com-icone">
+                        <input type="text" id="cpfUsuario" th:field="*{cpfUsuario}" placeholder="000.000.000-00">
+                        <i class="ti ti-id" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <!-- TELEFONE -->
+                <div class="campo">
+                    <label for="telefoneUsuario">Telefone</label>
+                    <div class="campo-com-icone">
+                        <input type="text" id="telefoneUsuario" th:field="*{telefoneUsuario}" placeholder="(00) 00000-0000">
+                        <i class="ti ti-phone" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <!-- LOGIN -->
+                <div class="campo largura-total">
+                    <label for="loginUsuario">Login</label>
+                    <div class="campo-com-icone">
+                        <input type="text" id="loginUsuario" th:field="*{loginUsuario}" placeholder="Digite o login">
+                        <i class="ti ti-at" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <!-- SENHA -->
+                <div class="campo largura-total campo-senha">
+                    <label for="senhaUsuario">Senha</label>
+
+                    <div class="senha-container">
+                        <div class="campo-com-icone">
+                            <input type="password" id="senhaUsuario" th:field="*{senhaUsuario}"
+                                   placeholder="Digite uma senha forte" autocomplete="new-password">
+                            <i class="ti ti-lock" aria-hidden="true"></i>
+                            <i class="ti ti-eye mostrar-senha" id="mostrarSenha" title="Mostrar senha"></i>
+                        </div>
+
+                        <div class="barra-forca">
+                            <div class="barra-forca-nivel" id="barraForca"></div>
+                        </div>
+
+                        <span class="texto-forca" id="textoForca">Digite uma senha</span>
+
+                        <div class="requisitos-senha">
+                            <div class="requisito invalido" id="reqTamanho">
+                                <i class="ti ti-circle-x"></i>Pelo menos 8 caracteres
+                            </div>
+                            <div class="requisito invalido" id="reqMaiuscula">
+                                <i class="ti ti-circle-x"></i>Uma letra maiúscula
+                            </div>
+                            <div class="requisito invalido" id="reqMinuscula">
+                                <i class="ti ti-circle-x"></i>Uma letra minúscula
+                            </div>
+                            <div class="requisito invalido" id="reqNumero">
+                                <i class="ti ti-circle-x"></i>Um número
+                            </div>
+                            <div class="requisito invalido" id="reqEspecial">
+                                <i class="ti ti-circle-x"></i>Um caractere especial
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIRMAR SENHA -->
+                <div class="campo largura-total campo-senha">
+                    <label for="confirmarSenha">Confirmar senha</label>
+                    <div class="campo-com-icone">
+                        <input type="password" id="confirmarSenha" placeholder="Digite a senha novamente"
+                               autocomplete="new-password">
+                        <i class="ti ti-lock-check" aria-hidden="true"></i>
+                        <i class="ti ti-eye mostrar-senha" id="mostrarConfirmacao" title="Mostrar senha"></i>
+                    </div>
+                    <span class="mensagem-confirmacao" id="mensagemConfirmacao"></span>
+                </div>
+
+                <input type="submit" value="Salvar cadastro">
+
+                <p class="rodape-form">
+                    Já tem uma conta? <a th:href="@{/login}">Fazer login</a>
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+<script>
+(function () {
+    "use strict";
+
+    /* ==========================================================
+       1. ELEMENTOS DO DOM
+    ========================================================== */
+    const senha = document.getElementById("senhaUsuario");
+    const confirmarSenha = document.getElementById("confirmarSenha");
+    const formCadastro = document.getElementById("formCadastro");
+
+    const barraForca = document.getElementById("barraForca");
+    const textoForca = document.getElementById("textoForca");
+    const mensagemConfirmacao = document.getElementById("mensagemConfirmacao");
+
+    const requisitos = {
+        tamanho: document.getElementById("reqTamanho"),
+        maiuscula: document.getElementById("reqMaiuscula"),
+        minuscula: document.getElementById("reqMinuscula"),
+        numero: document.getElementById("reqNumero"),
+        especial: document.getElementById("reqEspecial"),
+    };
+
+    const NIVEIS_FORCA = [
+        { max: 2, largura: "25%",  texto: "Senha muito fraca",  cor: "var(--cor-erro)" },
+        { max: 3, largura: "45%",  texto: "Senha fraca",        cor: "var(--cor-alerta)" },
+        { max: 4, largura: "65%",  texto: "Senha média",        cor: "var(--cor-atencao)" },
+        { max: 5, largura: "85%",  texto: "Senha forte",        cor: "var(--cor-sucesso)" },
+        { max: Infinity, largura: "100%", texto: "Senha muito forte", cor: "#198754" },
+    ];
+
+    /* ==========================================================
+       2. MOSTRAR / OCULTAR SENHA (reutilizável)
+    ========================================================== */
+    function configurarToggleSenha(botaoId, inputSenha) {
+        const botao = document.getElementById(botaoId);
+
+        botao.addEventListener("click", function () {
+            const visivel = inputSenha.type === "text";
+
+            inputSenha.type = visivel ? "password" : "text";
+            botao.classList.toggle("ti-eye", visivel);
+            botao.classList.toggle("ti-eye-off", !visivel);
+            botao.title = visivel ? "Mostrar senha" : "Ocultar senha";
+        });
+    }
+
+    configurarToggleSenha("mostrarSenha", senha);
+    configurarToggleSenha("mostrarConfirmacao", confirmarSenha);
+
+    /* ==========================================================
+       3. VALIDAÇÃO DOS REQUISITOS DA SENHA
+    ========================================================== */
+    function atualizarRequisito(elemento, valido) {
+        const icone = elemento.querySelector("i");
+
+        elemento.classList.toggle("valido", valido);
+        elemento.classList.toggle("invalido", !valido);
+        icone.classList.toggle("ti-circle-check", valido);
+        icone.classList.toggle("ti-circle-x", !valido);
+    }
+
+    function avaliarRequisitos(valor) {
+        const status = {
+            tamanho: valor.length >= 8,
+            maiuscula: /[A-Z]/.test(valor),
+            minuscula: /[a-z]/.test(valor),
+            numero: /[0-9]/.test(valor),
+            especial: /[^A-Za-z0-9]/.test(valor),
+        };
+
+        Object.keys(status).forEach(chave =>
+            atualizarRequisito(requisitos[chave], status[chave])
+        );
+
+        return status;
+    }
+
+    /* ==========================================================
+       4. FORÇA DA SENHA
+    ========================================================== */
+    function calcularPontuacao(valor, status) {
+        let pontos = Object.values(status).filter(Boolean).length;
+
+        if (valor.length >= 12) pontos++;
+        if (valor.length >= 16) pontos++;
+
+        return pontos;
+    }
+
+    function atualizarBarraForca(valor, pontos) {
+        if (valor.length === 0) {
+            barraForca.style.width = "0%";
+            textoForca.textContent = "Digite uma senha";
+            textoForca.style.color = "#777";
+            return;
+        }
+
+        const nivel = NIVEIS_FORCA.find(n => pontos <= n.max);
+
+        barraForca.style.width = nivel.largura;
+        textoForca.textContent = nivel.texto;
+        textoForca.style.color = nivel.cor;
+    }
+
+    /* ==========================================================
+       5. CONFIRMAÇÃO DE SENHA
+    ========================================================== */
+    function verificarSenhas() {
+        const valorConfirmacao = confirmarSenha.value;
+
+        if (valorConfirmacao.length === 0) {
+            mensagemConfirmacao.textContent = "";
+            mensagemConfirmacao.className = "mensagem-confirmacao";
+            confirmarSenha.style.borderColor = "";
+            return;
+        }
+
+        const coincidem = senha.value === valorConfirmacao;
+
+        mensagemConfirmacao.textContent = coincidem
+            ? "✓ As senhas coincidem"
+            : "✕ As senhas não coincidem";
+
+        mensagemConfirmacao.className =
+            "mensagem-confirmacao " + (coincidem ? "senha-igual" : "senha-diferente");
+
+        confirmarSenha.style.borderColor = coincidem ? "#28a745" : "#dc3545";
+    }
+
+    /* ==========================================================
+       6. EVENTOS
+    ========================================================== */
+    senha.addEventListener("input", function () {
+        const valor = senha.value;
+        const status = avaliarRequisitos(valor);
+        const pontos = calcularPontuacao(valor, status);
+
+        atualizarBarraForca(valor, pontos);
+        verificarSenhas();
+    });
+
+    confirmarSenha.addEventListener("input", verificarSenhas);
+
+    formCadastro.addEventListener("submit", function (event) {
+        if (senha.value !== confirmarSenha.value) {
+            event.preventDefault();
+            alert("As senhas não coincidem. Verifique e tente novamente.");
+            confirmarSenha.focus();
+            return;
+        }
+
+        if (senha.value.length < 8) {
+            event.preventDefault();
+            alert("A senha deve possuir pelo menos 8 caracteres.");
+            senha.focus();
+        }
+    });
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir senha</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-primaria-escura: #045a99;
+            --cor-fundo: #fbf7f1;
+            --cor-texto-escuro: #16283a;
+            --cor-texto-suave: #5c6b7a;
+            --cor-borda: #eee2d3;
+            --cor-sucesso: #28a745;
+            --cor-erro: #dc3545;
+            --raio-borda: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            padding: 24px; font-family: 'Inter', Arial, sans-serif; color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            background-image: radial-gradient(circle at 1px 1px, rgba(0,119,204,0.08) 1px, transparent 0);
+            background-size: 26px 26px; line-height: 1.5;
+        }
+        :focus-visible { outline: 3px solid var(--cor-secundaria); outline-offset: 3px; }
+        .cartao {
+            width: 100%; max-width: 440px; padding: 38px 36px; background: #fff;
+            border-radius: 28px; box-shadow: 0 20px 45px rgba(0,55,100,0.16);
+        }
+        .icone {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 54px; height: 54px; margin-bottom: 16px; font-size: 26px; color: #fff;
+            background: linear-gradient(150deg, var(--cor-secundaria), var(--cor-primaria));
+            border-radius: 50%;
+        }
+        h1 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 25px; }
+        .sub { margin: 6px 0 22px; font-size: 14px; color: var(--cor-texto-suave); }
+        label { display: block; margin-bottom: 6px; font-size: 12.5px; font-weight: 700; }
+        .grupo { margin-bottom: 14px; }
+        .campo { position: relative; display: flex; align-items: center; }
+        .campo > i:first-of-type { position: absolute; left: 14px; font-size: 16px; color: var(--cor-texto-suave); pointer-events: none; }
+        input[type="password"], input[type="text"] {
+            width: 100%; padding: 12px 44px 12px 40px; font: inherit; font-size: 14px;
+            background: var(--cor-fundo); border: 2px solid var(--cor-borda);
+            border-radius: var(--raio-borda); outline: none; transition: 0.25s ease;
+        }
+        input:focus { border-color: var(--cor-secundaria); background: #fff; box-shadow: 0 0 0 4px rgba(0,162,255,0.15); }
+        .mostrar {
+            position: absolute; right: 14px; font-size: 18px; color: var(--cor-texto-suave);
+            cursor: pointer; background: none; border: none; padding: 0; width: auto; margin: 0;
+        }
+        .mostrar:hover { color: var(--cor-secundaria); transform: none; background: none; }
+        .requisitos { margin-top: 8px; padding: 10px 12px; font-size: 12px; background: var(--cor-fundo); border-radius: var(--raio-borda); }
+        .req { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; color: var(--cor-texto-suave); }
+        .req:last-child { margin-bottom: 0; }
+        .req.valido { font-weight: 700; color: var(--cor-sucesso); }
+        .confirmacao { display: block; min-height: 16px; margin-top: 6px; font-size: 12px; font-weight: 700; }
+        .igual { color: var(--cor-sucesso); }
+        .diferente { color: var(--cor-erro); }
+        button[type="submit"] {
+            width: 100%; margin-top: 10px; padding: 14px; font: inherit; font-size: 15px; font-weight: 700;
+            color: #fff; background: var(--cor-primaria); border: none; border-radius: 999px;
+            cursor: pointer; transition: 0.25s ease;
+        }
+        button[type="submit"]:hover { background: var(--cor-primaria-escura); transform: translateY(-2px); }
+        .aviso { display: flex; gap: 10px; margin-bottom: 18px; padding: 12px 14px; font-size: 13.5px; border-radius: var(--raio-borda); }
+        .aviso i { font-size: 18px; flex-shrink: 0; }
+        .aviso.erro { color: #8a1c27; background: #fcebeb; }
+        .aviso.erro i { color: var(--cor-erro); }
+        .rodape { margin-top: 20px; font-size: 13px; text-align: center; }
+        .rodape a { font-weight: 700; color: var(--cor-primaria); text-decoration: none; }
+        .rodape a:hover { text-decoration: underline; }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+</head>
+<body>
+
+    <main class="cartao">
+
+        <!-- LINK INVÁLIDO OU EXPIRADO -->
+        <th:block th:if="${tokenInvalido}">
+            <span class="icone"><i class="ti ti-link-off" aria-hidden="true"></i></span>
+            <h1>Link inválido ou expirado</h1>
+            <p class="sub">Por segurança, o link vale por 30 minutos e só pode ser usado uma vez. Solicite um novo para continuar.</p>
+            <div class="aviso erro" th:if="${erro}" role="alert">
+                <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                <span th:text="${erro}"></span>
+            </div>
+            <p class="rodape"><a th:href="@{/esqueci-senha}">Solicitar novo link</a></p>
+        </th:block>
+
+        <!-- FORMULÁRIO DE NOVA SENHA -->
+        <th:block th:unless="${tokenInvalido}">
+            <span class="icone"><i class="ti ti-lock-check" aria-hidden="true"></i></span>
+            <h1>Criar nova senha</h1>
+            <p class="sub">Escolha uma senha forte para proteger a sua conta.</p>
+
+            <div class="aviso erro" th:if="${erro}" role="alert">
+                <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                <span th:text="${erro}"></span>
+            </div>
+
+            <form th:action="@{/redefinir-senha}" method="post" id="formRedefinir">
+                <input type="hidden" name="token" th:value="${token}">
+
+                <div class="grupo">
+                    <label for="senha">Nova senha</label>
+                    <div class="campo">
+                        <input type="password" id="senha" name="senha" placeholder="Digite a nova senha"
+                               autocomplete="new-password" required>
+                        <i class="ti ti-lock" aria-hidden="true"></i>
+                        <button type="button" class="mostrar" data-alvo="senha" title="Mostrar senha">
+                            <i class="ti ti-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="requisitos">
+                        <div class="req" data-regra="tamanho"><i class="ti ti-circle-x"></i>Pelo menos 8 caracteres</div>
+                        <div class="req" data-regra="maiuscula"><i class="ti ti-circle-x"></i>Uma letra maiúscula</div>
+                        <div class="req" data-regra="minuscula"><i class="ti ti-circle-x"></i>Uma letra minúscula</div>
+                        <div class="req" data-regra="numero"><i class="ti ti-circle-x"></i>Um número</div>
+                        <div class="req" data-regra="especial"><i class="ti ti-circle-x"></i>Um caractere especial</div>
+                    </div>
+                </div>
+
+                <div class="grupo">
+                    <label for="confirmacao">Confirmar nova senha</label>
+                    <div class="campo">
+                        <input type="password" id="confirmacao" name="confirmacao" placeholder="Digite a senha novamente"
+                               autocomplete="new-password" required>
+                        <i class="ti ti-lock-check" aria-hidden="true"></i>
+                        <button type="button" class="mostrar" data-alvo="confirmacao" title="Mostrar senha">
+                            <i class="ti ti-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <span class="confirmacao" id="msgConfirmacao" aria-live="polite"></span>
+                </div>
+
+                <button type="submit">Salvar nova senha</button>
+            </form>
+        </th:block>
+
+        <p class="rodape" th:unless="${tokenInvalido}">
+            <a th:href="@{/login}">Voltar para o login</a>
+        </p>
+    </main>
+
+<script>
+(function () {
+    "use strict";
+
+    const senha = document.getElementById("senha");
+    const confirmacao = document.getElementById("confirmacao");
+    if (!senha) return; // tela de link inválido
+
+    const msg = document.getElementById("msgConfirmacao");
+
+    const regras = {
+        tamanho: v => v.length >= 8,
+        maiuscula: v => /[A-Z]/.test(v),
+        minuscula: v => /[a-z]/.test(v),
+        numero: v => /[0-9]/.test(v),
+        especial: v => /[^A-Za-z0-9]/.test(v)
+    };
+
+    function atualizarRequisitos() {
+        document.querySelectorAll(".req").forEach(el => {
+            const ok = regras[el.dataset.regra](senha.value);
+            el.classList.toggle("valido", ok);
+            const icone = el.querySelector("i");
+            icone.classList.toggle("ti-circle-check", ok);
+            icone.classList.toggle("ti-circle-x", !ok);
+        });
+    }
+
+    function verificarConfirmacao() {
+        if (!confirmacao.value) { msg.textContent = ""; msg.className = "confirmacao"; return; }
+        const igual = senha.value === confirmacao.value;
+        msg.textContent = igual ? "✓ As senhas coincidem" : "✕ As senhas não coincidem";
+        msg.className = "confirmacao " + (igual ? "igual" : "diferente");
+    }
+
+    senha.addEventListener("input", () => { atualizarRequisitos(); verificarConfirmacao(); });
+    confirmacao.addEventListener("input", verificarConfirmacao);
+
+    document.querySelectorAll(".mostrar").forEach(botao => {
+        botao.addEventListener("click", () => {
+            const campo = document.getElementById(botao.dataset.alvo);
+            const oculto = campo.type === "password";
+            campo.type = oculto ? "text" : "password";
+            const icone = botao.querySelector("i");
+            icone.classList.toggle("ti-eye", !oculto);
+            icone.classList.toggle("ti-eye-off", oculto);
+            botao.title = oculto ? "Ocultar senha" : "Mostrar senha";
+        });
+    });
+
+    document.getElementById("formRedefinir").addEventListener("submit", e => {
+        const tudoOk = Object.values(regras).every(r => r(senha.value));
+        if (!tudoOk || senha.value !== confirmacao.value) {
+            e.preventDefault();
+            alert("Confira os requisitos da senha e se as duas senhas são iguais.");
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

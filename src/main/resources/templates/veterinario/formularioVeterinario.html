@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Veterinários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-gradiente-1: #4facfe;
+            --cor-gradiente-2: #00c2ff;
+            --cor-destaque: #ffb84d;
+
+            --cor-fundo: #fbf7f1;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #1f2b3a;
+            --cor-texto-suave: #667085;
+            --cor-borda: #eee2d3;
+            --raio-borda: 10px;
+            --raio-borda-card: 20px;
+            --transicao-padrao: 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--cor-fundo);
+            padding: 30px;
+        }
+
+        .container {
+            background-color: var(--cor-texto-claro);
+            width: 100%;
+            max-width: 560px;
+            padding: 40px 45px;
+            border-radius: var(--raio-borda-card);
+            box-shadow: 0 20px 45px rgba(0, 55, 100, 0.12);
+        }
+
+        .cabecalho {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cabecalho .icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            font-size: 28px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(150deg, var(--cor-gradiente-1), var(--cor-primaria));
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 119, 204, 0.3);
+        }
+
+        .cabecalho h1 {
+            color: var(--cor-primaria);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .cabecalho p {
+            color: var(--cor-texto-suave);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 16px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        .campo.largura-total {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--cor-texto-escuro);
+        }
+
+        .campo-com-icone {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .campo-com-icone i {
+            position: absolute;
+            left: 14px;
+            color: var(--cor-texto-suave);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+            outline: none;
+            font-size: 14px;
+            color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            transition: var(--transicao-padrao);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--cor-secundaria);
+            background-color: var(--cor-texto-claro);
+            box-shadow: 0 0 0 4px rgba(0, 162, 255, 0.15);
+        }
+
+        input[type="text"]:focus + i {
+            color: var(--cor-secundaria);
+        }
+
+        button {
+            grid-column: 1 / -1;
+            margin-top: 12px;
+            padding: 15px;
+            background-color: var(--cor-primaria);
+            color: var(--cor-texto-claro);
+            border: none;
+            border-radius: var(--raio-borda);
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(0, 119, 204, 0.3);
+            transition: var(--transicao-padrao);
+        }
+
+        button:hover {
+            background-color: var(--cor-secundaria);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(0, 119, 204, 0.35);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .rodape {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        .rodape a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .rodape a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="cabecalho">
+            <span class="icone"><i class="ti ti-stethoscope" aria-hidden="true"></i></span>
+            <h1>Cadastro de Veterinários</h1>
+            <p>Preencha os dados abaixo para cadastrar um veterinário</p>
+        </div>
+
+        <form th:action="@{/veterinarios/salvar}" method="post" th:object="${veterinario}">
+
+            <input type="hidden" th:field="*{idVeterinario}">
+
+            <div class="campo largura-total">
+                <label for="nomeVeterinario">Nome</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="nomeVeterinario" th:field="*{nomeVeterinario}" placeholder="Digite o nome">
+                    <i class="ti ti-user" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo largura-total">
+                <label for="especialidadeVeterinario">Especialidade</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="especialidadeVeterinario" th:field="*{especialidadeVeterinario}" placeholder="Digite a especialidade">
+                    <i class="ti ti-medical-cross" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="crmVeterinario">CRM</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="crmVeterinario" th:field="*{crmVeterinario}" placeholder="Digite o CRM">
+                    <i class="ti ti-license" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="telefoneVeterinario">Telefone</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="telefoneVeterinario" th:field="*{telefoneVeterinario}" placeholder="(00) 00000-0000">
+                    <i class="ti ti-phone" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo largura-total">
+                <label for="cpfVeterinario">CPF</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="cpfVeterinario" th:field="*{cpfVeterinario}" placeholder="000.000.000-00">
+                    <i class="ti ti-id" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <button type="submit">Salvar veterinário</button>
+
+            <p class="rodape">
+                <a th:href="@{/veterinarios/listar}">
+                    <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                    Voltar para listagem
+                </a>
+            </p>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

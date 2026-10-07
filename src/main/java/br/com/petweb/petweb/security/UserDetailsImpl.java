@@ -1,0 +1,65 @@
+package br.com.petweb.petweb.security;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import br.com.petweb.petweb.entity.Usuario;
+
+public class UserDetailsImpl implements UserDetails {
+
+    private final Usuario usuario;
+ 
+    public UserDetailsImpl(Usuario usuario) {
+        this.usuario = usuario;
+    }
+   
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = usuario.getRole() == null ? "ROLE_USER"
+                : usuario.getRole().trim().toUpperCase(Locale.ROOT);
+        if (!role.startsWith("ROLE_")) {
+            role = "ROLE_" + role;
+        }
+        if ("ROLE_ADMIN".equals(role)) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+ 
+    @Override
+    public String getPassword() {
+        return usuario.getSenhaUsuario();
+    }
+ 
+    @Override
+    public String getUsername() {
+        return usuario.getLoginUsuario();
+    }
+ 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+ 
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+ 
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+ 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+    
+}
