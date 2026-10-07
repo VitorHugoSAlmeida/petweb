@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Animais</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-gradiente-1: #4facfe;
+            --cor-gradiente-2: #00c2ff;
+            --cor-destaque: #ffb84d;
+
+            --cor-fundo: #fbf7f1;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #1f2b3a;
+            --cor-texto-suave: #667085;
+            --cor-borda: #eee2d3;
+            --raio-borda: 10px;
+            --raio-borda-card: 20px;
+            --transicao-padrao: 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--cor-fundo);
+            padding: 30px;
+        }
+
+        .container {
+            background-color: var(--cor-texto-claro);
+            width: 100%;
+            max-width: 560px;
+            padding: 40px 45px;
+            border-radius: var(--raio-borda-card);
+            box-shadow: 0 20px 45px rgba(0, 55, 100, 0.12);
+        }
+
+        .cabecalho {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cabecalho .icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            font-size: 28px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(150deg, var(--cor-gradiente-1), var(--cor-primaria));
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 119, 204, 0.3);
+        }
+
+        .cabecalho h1 {
+            color: var(--cor-primaria);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .cabecalho p {
+            color: var(--cor-texto-suave);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 16px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        .campo.largura-total {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--cor-texto-escuro);
+        }
+
+        .campo-com-icone {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .campo-com-icone i {
+            position: absolute;
+            left: 14px;
+            color: var(--cor-texto-suave);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+            outline: none;
+            font-size: 14px;
+            color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            font-family: inherit;
+            appearance: none;
+            transition: var(--transicao-padrao);
+        }
+
+        select {
+            padding-right: 36px;
+            cursor: pointer;
+        }
+
+        .campo-com-icone:has(select)::before {
+            content: "";
+            position: absolute;
+            right: 14px;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid var(--cor-texto-suave);
+            border-bottom: 2px solid var(--cor-texto-suave);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: var(--cor-secundaria);
+            background-color: var(--cor-texto-claro);
+            box-shadow: 0 0 0 4px rgba(0, 162, 255, 0.15);
+        }
+
+        input[type="text"]:focus + i,
+        select:focus + i {
+            color: var(--cor-secundaria);
+        }
+
+        /* Campo de foto, no mesmo espírito visual dos demais campos */
+        .campo-foto {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border: 2px dashed var(--cor-borda);
+            border-radius: var(--raio-borda);
+            background-color: var(--cor-fundo);
+        }
+
+        .campo-foto i {
+            font-size: 20px;
+            color: var(--cor-primaria);
+            flex-shrink: 0;
+        }
+
+        .campo-foto input[type="file"] {
+            flex: 1;
+            font-size: 13px;
+            color: var(--cor-texto-suave);
+            font-family: inherit;
+        }
+
+        .dica-foto {
+            font-size: 12px;
+            color: var(--cor-texto-suave);
+            margin-top: 6px;
+        }
+
+        input[type="submit"] {
+            grid-column: 1 / -1;
+            margin-top: 12px;
+            padding: 15px;
+            background-color: var(--cor-primaria);
+            color: var(--cor-texto-claro);
+            border: none;
+            border-radius: var(--raio-borda);
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(0, 119, 204, 0.3);
+            transition: var(--transicao-padrao);
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--cor-secundaria);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(0, 119, 204, 0.35);
+        }
+
+        input[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .rodape {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        .rodape a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .rodape a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="cabecalho">
+            <span class="icone"><i class="ti ti-paw" aria-hidden="true"></i></span>
+            <h1>Cadastro de Animais</h1>
+            <p>Preencha os dados abaixo para cadastrar um animal</p>
+        </div>
+
+        <form th:action="@{/animais/salvar}" method="POST" th:object="${animal}" enctype="multipart/form-data">
+
+            <input type="hidden" th:field="*{idAnimal}"/>
+
+            <div class="campo largura-total">
+                <label for="nomeAnimal">Nome</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="nomeAnimal" th:field="*{nomeAnimal}" placeholder="Nome do animal">
+                    <i class="ti ti-paw" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo largura-total">
+                <label for="cliente">Tutor</label>
+                <div class="campo-com-icone">
+                    <select id="cliente" th:field="*{cliente}">
+                        <option value="" disabled selected>Selecione o tutor</option>
+                        <option th:each="cliente : ${clientes}"
+                                th:text="${cliente.nomeCliente}"
+                                th:value="${cliente.idCliente}">
+                        </option>
+                    </select>
+                    <i class="ti ti-user" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="racaAnimal">Raça</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="racaAnimal" th:field="*{racaAnimal}" placeholder="Raça">
+                    <i class="ti ti-dog" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="porteAnimal">Porte</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="porteAnimal" th:field="*{porteAnimal}" placeholder="Porte">
+                    <i class="ti ti-ruler-2" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo largura-total">
+                <label for="pesoAnimal">Peso</label>
+                <div class="campo-com-icone">
+                    <input type="text" id="pesoAnimal" th:field="*{pesoAnimal}" placeholder="Peso (kg)">
+                    <i class="ti ti-weight" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="campo largura-total">
+                <label for="fotoAnimal">Foto</label>
+                <div class="campo-foto">
+                    <i class="ti ti-camera" aria-hidden="true"></i>
+                    <input type="file" id="fotoAnimal" name="foto" accept="image/*">
+                </div>
+                <span class="dica-foto">Tamanho máximo: 2Mb</span>
+            </div>
+
+            <input type="submit" value="Salvar animal">
+
+            <p class="rodape">
+                <a th:href="@{/animais/listar}">
+                    <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                    Voltar para listagem
+                </a>
+            </p>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Pedidos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-gradiente-1: #4facfe;
+            --cor-gradiente-2: #00c2ff;
+            --cor-destaque: #ffb84d;
+
+            --cor-fundo: #fbf7f1;
+            --cor-fundo-suave: #f4efe6;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #1f2b3a;
+            --cor-texto-suave: #667085;
+            --cor-borda: #eee2d3;
+            --cor-erro: #e24b4a;
+            --cor-erro-fundo: #fcebeb;
+            --raio-borda: 10px;
+            --raio-borda-card: 20px;
+            --transicao-padrao: 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--cor-fundo);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--cor-texto-claro);
+            width: 100%;
+            max-width: 900px;
+            padding: 35px 40px;
+            border-radius: var(--raio-borda-card);
+            box-shadow: 0 20px 45px rgba(0, 55, 100, 0.12);
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .cabecalho-titulo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cabecalho-titulo .icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+            color: var(--cor-texto-claro);
+            background: linear-gradient(150deg, var(--cor-gradiente-1), var(--cor-primaria));
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 119, 204, 0.3);
+        }
+
+        .cabecalho-titulo h1 {
+            color: var(--cor-primaria);
+            font-size: 24px;
+        }
+
+        .btn-novo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            background-color: var(--cor-primaria);
+            color: var(--cor-texto-claro);
+            padding: 12px 20px;
+            border-radius: var(--raio-borda);
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: var(--transicao-padrao);
+            box-shadow: 0 10px 22px rgba(0, 119, 204, 0.3);
+        }
+
+        .btn-novo i {
+            font-size: 18px;
+        }
+
+        .btn-novo:hover {
+            background-color: var(--cor-secundaria);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(0, 119, 204, 0.35);
+        }
+
+        .tabela-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #e8f4ff;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            color: var(--cor-primaria);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--cor-borda);
+        }
+
+        td {
+            padding: 14px 16px;
+            color: var(--cor-texto-escuro);
+            border-bottom: 1px solid var(--cor-borda);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr.linha-pedido:hover {
+            background-color: var(--cor-fundo);
+        }
+
+        .col-numero {
+            font-weight: bold;
+            color: var(--cor-primaria);
+            white-space: nowrap;
+        }
+
+        .col-total {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .badge-itens {
+            display: inline-block;
+            padding: 3px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--cor-primaria);
+            background-color: #e8f4ff;
+            border-radius: 20px;
+        }
+
+        /* Linha de detalhes (itens do pedido) */
+        .linha-detalhes {
+            display: none;
+        }
+
+        .linha-detalhes.aberta {
+            display: table-row;
+        }
+
+        .linha-detalhes > td {
+            padding: 0;
+            background-color: var(--cor-fundo);
+        }
+
+        .detalhes-conteudo {
+            padding: 14px 16px 18px;
+        }
+
+        .tabela-itens {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background-color: var(--cor-texto-claro);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-borda);
+            overflow: hidden;
+        }
+
+        .tabela-itens th {
+            padding: 9px 12px;
+            font-size: 11px;
+            color: var(--cor-texto-suave);
+            background-color: var(--cor-fundo-suave);
+        }
+
+        .tabela-itens td {
+            padding: 9px 12px;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-acao {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: none;
+            border-radius: var(--raio-borda);
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transicao-padrao);
+        }
+
+        .btn-acao i {
+            font-size: 15px;
+        }
+
+        .btn-detalhes {
+            background-color: #e8f4ff;
+            color: var(--cor-primaria);
+        }
+
+        .btn-detalhes:hover,
+        .btn-detalhes.ativo {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-texto-claro);
+        }
+
+        .btn-delete {
+            background-color: var(--cor-erro-fundo);
+            color: var(--cor-erro);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--cor-erro);
+            color: var(--cor-texto-claro);
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--cor-texto-suave);
+        }
+
+        .vazio i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .rodape {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+        }
+
+        .rodape a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .rodape a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+            th, td {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="cabecalho">
+            <div class="cabecalho-titulo">
+                <span class="icone"><i class="ti ti-shopping-cart" aria-hidden="true"></i></span>
+                <h1>Listagem de Pedidos</h1>
+            </div>
+            <a class="btn-novo" th:href="@{/pedidos/criar}">
+                <i class="ti ti-plus" aria-hidden="true"></i>
+                Novo Pedido
+            </a>
+        </div>
+
+        <div class="tabela-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Cliente</th>
+                        <th>Itens</th>
+                        <th>Total</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <th:block th:each="pedido : ${pedidos}">
+
+                        <!-- Linha principal do pedido -->
+                        <tr class="linha-pedido">
+                            <td class="col-numero" th:text="'#' + ${pedido.idPedido}"></td>
+                            <td th:text="${pedido.cliente.nomeCliente}"></td>
+                            <td>
+                                <span class="badge-itens"
+                                      th:text="${#lists.size(pedido.itens)}"></span>
+                            </td>
+                            <td class="col-total"
+                                th:text="'R$ ' + ${#numbers.formatDecimal(#aggregates.sum(pedido.itens.![quantidade * preco]), 1, 'POINT', 2, 'COMMA')}"></td>
+                            <td>
+                                <div class="acoes">
+                                    <button type="button" class="btn-acao btn-detalhes"
+                                            th:attr="data-alvo='detalhes-' + ${pedido.idPedido}"
+                                            onclick="alternarDetalhes(this)">
+                                        <i class="ti ti-eye" aria-hidden="true"></i>
+                                        Detalhes
+                                    </button>
+                                    <a class="btn-acao btn-delete"
+                                       th:href="@{/pedidos/excluir/{id}(id=${pedido.idPedido})}"
+                                       onclick="return confirm('Deseja realmente excluir este pedido?');">
+                                        <i class="ti ti-trash" aria-hidden="true"></i>
+                                        Excluir
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Linha expansível com os itens do pedido -->
+                        <tr class="linha-detalhes" th:id="'detalhes-' + ${pedido.idPedido}">
+                            <td colspan="5">
+                                <div class="detalhes-conteudo">
+                                    <table class="tabela-itens">
+                                        <thead>
+                                            <tr>
+                                                <th>Produto</th>
+                                                <th>Qtd.</th>
+                                                <th>Preço unit.</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="item : ${pedido.itens}">
+                                                <td th:text="${item.produto.descricaoProduto}"></td>
+                                                <td th:text="${item.quantidade}"></td>
+                                                <td th:text="'R$ ' + ${#numbers.formatDecimal(item.preco, 1, 'POINT', 2, 'COMMA')}"></td>
+                                                <td th:text="'R$ ' + ${#numbers.formatDecimal(item.quantidade * item.preco, 1, 'POINT', 2, 'COMMA')}"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </th:block>
+
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="5" class="vazio">
+                            <i class="ti ti-package-off" aria-hidden="true"></i>
+                            Nenhum pedido cadastrado ainda.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="rodape">
+            <a th:href="@{/home}">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                Voltar para home
+            </a>
+        </p>
+    </div>
+
+<script>
+    function alternarDetalhes(botao) {
+        var linha = document.getElementById(botao.getAttribute("data-alvo"));
+        var aberta = linha.classList.toggle("aberta");
+        botao.classList.toggle("ativo", aberta);
+    }
+</script>
+
+</body>
+</html>

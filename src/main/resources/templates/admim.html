@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador - PetWeb</title>
+    <style>
+        body { font-family: Inter, Arial, sans-serif; background: #fbf7f1; color: #16283a; margin: 0; padding: 32px; }
+        .topo { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto 24px; }
+        h1 { margin: 0; font-size: 26px; }
+        .grade { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .card { display: block; padding: 24px; background: #fff; border-radius: 16px; text-decoration: none; color: inherit; box-shadow: 0 4px 14px rgba(16,40,70,.08); font-weight: 700; }
+        .card:hover { background: #e6f2fb; }
+        button { padding: 10px 18px; border: 0; border-radius: 999px; background: #0077cc; color: #fff; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="topo">
+        <h1>Painel do Administrador</h1>
+        <form th:action="@{/logout}" method="post"><button type="submit">Sair</button></form>
+    </div>
+
+    <p style="max-width:900px;margin:0 auto 20px">
+        Logado como <strong th:text="${#authentication.name}">admin</strong>
+    </p>
+
+    <div class="grade">
+        <a class="card" th:href="@{/veterinarios/listar}">Veterinários</a>
+        <a class="card" th:href="@{/clientes/listar}">Clientes</a>
+        <a class="card" th:href="@{/produtos/listar}">Produtos</a>
+    <a class="card" th:href="@{/animais/consulta}">Relatório de tutores e animais</a>
+    </div>
+</body>
+</html>

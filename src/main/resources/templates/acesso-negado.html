@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso negado - PetWeb</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --cor-primaria: #0077cc;
+            --cor-secundaria: #00a2ff;
+            --cor-primaria-escura: #045a99;
+            --cor-erro: #e24b4a;
+            --cor-fundo: #fbf7f1;
+            --cor-texto-escuro: #16283a;
+            --cor-texto-suave: #5c6b7a;
+            --fonte-display: 'Baloo 2', system-ui, sans-serif;
+            --fonte-corpo: 'Inter', Arial, Helvetica, sans-serif;
+            --sombra-media: 0 20px 45px rgba(0, 55, 100, 0.16);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(16px, 5vw, 32px);
+            font-family: var(--fonte-corpo);
+            color: var(--cor-texto-escuro);
+            background-color: var(--cor-fundo);
+            background-image: radial-gradient(circle at 1px 1px, rgba(0, 119, 204, 0.08) 1px, transparent 0);
+            background-size: 26px 26px;
+            line-height: 1.5;
+        }
+
+        .cartao {
+            width: 100%;
+            max-width: 440px;
+            padding: clamp(32px, 6vw, 48px);
+            text-align: center;
+            background-color: #fff;
+            border-radius: 28px;
+            box-shadow: var(--sombra-media);
+        }
+
+        .icone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 76px;
+            height: 76px;
+            margin-bottom: 20px;
+            font-size: 38px;
+            color: var(--cor-erro);
+            background-color: #fcebeb;
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-family: var(--fonte-display);
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        p {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--cor-texto-suave);
+        }
+
+        .acoes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 999px;
+            border: 2px solid var(--cor-primaria);
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .btn-primario {
+            color: #fff;
+            background-color: var(--cor-primaria);
+        }
+
+        .btn-primario:hover {
+            background-color: var(--cor-primaria-escura);
+            border-color: var(--cor-primaria-escura);
+        }
+
+        .btn-secundario {
+            color: var(--cor-primaria);
+            background-color: transparent;
+        }
+
+        .btn-secundario:hover {
+            background-color: rgba(0, 119, 204, 0.08);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--cor-secundaria);
+            outline-offset: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="cartao">
+        <div class="icone" aria-hidden="true"><i class="ti ti-lock-off"></i></div>
+
+        <h1>Acesso negado</h1>
+        <p>Você não tem permissão para acessar esta página. Se acha que isso é um engano, fale com um administrador.</p>
+
+        <div class="acoes">
+            <a class="btn btn-primario" sec:authorize="hasRole('ADMIN')" th:href="@{/admin/home}">Voltar ao painel administrativo</a><a class="btn btn-primario" sec:authorize="hasRole('USER')" th:href="@{/home}">
+                <i class="ti ti-home" aria-hidden="true"></i>
+                Voltar ao início
+            </a>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-secundario" style="width:100%">
+                    <i class="ti ti-logout" aria-hidden="true"></i>
+                    Sair e trocar de conta
+                </button>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>
